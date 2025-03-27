@@ -1,2 +1,4 @@
 Hyperparameters: 
 Hyperparameters are chosen based on what Cursor thought was best. 
+
+Who wrote this code? - Torin and Jacqueline did

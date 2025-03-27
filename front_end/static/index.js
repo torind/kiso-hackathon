@@ -68,6 +68,9 @@ $(document).ready(function() {
             dp_toggle = false;  
         }
         else {
+            if ($('#data-preview-panel-body').text().trim() === 'Loading...') {
+                load_summary();
+            }
             res = $('#data-preview-panel-body').collapse('show')
             $('#data-preview-panel-heading i').removeClass('fa-chevron-right').addClass('fa-chevron-down');
             dp_toggle = true;
@@ -98,8 +101,21 @@ $(document).ready(function() {
             url: '/notebook-content',
             type: 'GET',
             success: function(data) {
-                // Render the notebook content as markdown
-                $('#notebook-viewer').html(marked.parse(data));
+                // First render the markdown
+                const renderedContent = marked.parse(data);
+                $('#notebook-viewer').html(renderedContent);
+                
+                // Add line numbers to code blocks
+                $('pre code').each(function() {
+                    const code = $(this);
+                    const lines = code.text().split('\n').length;
+                    const lineNumbers = $('<div>', {
+                        class: 'line-numbers',
+                        text: Array.from({length: lines}, (_, i) => i + 1).join('\n')
+                    });
+                    
+                    code.parent().addClass('code-block').prepend(lineNumbers);
+                });
             },
             error: function(response) {
                 alert("Error loading notebook: " + response.responseText);
@@ -119,7 +135,6 @@ $(document).ready(function() {
         $('#loader').hide();
     }
     
-    // load_summary();
     loadDatasets();
     load_notebook();
 
@@ -161,7 +176,7 @@ $(document).ready(function() {
         const selection = window.getSelection();
         selectedText = selection.toString().trim();
         
-        if (selectedText && e.button === 2) { // Right click
+        if (e.button === 2) { // Right click
             e.preventDefault();
             
             // Position the context menu
@@ -182,20 +197,60 @@ $(document).ready(function() {
         switch(action) {
             case 'Ask about this':
                 message = `Answer the following question: \n\nAbout this code:\n"${selectedText}"`;
+                $('#chat-input').focus();
+                $('#chat-input').val(message);
+                $('#chat-input').get(0).setSelectionRange(31, 31);
                 break;
             case 'Explain this':
                 message = `Explain what this does: "${selectedText}"`;
+                $('#chat-input').val(message);
+                $('#chat-input').focus();
                 break;
             case 'Add context':
-                message = `Help me debug this code: "${selectedText}"`;
+                // Load existing context and show modal
+                showLoader();
+                $.ajax({
+                    url: '/api/get_context',
+                    type: 'GET',
+                    success: function(response) {
+                        $('#contextText').val(response);
+                        $('#contextModal').modal('show');
+                    },
+                    error: function(response) {
+                        alert("Error loading context: " + response.responseText);
+                    },
+                    complete: function() {
+                        clearLoader();
+                    }
+                });
                 break;
         }
         
-        // Add the message to chat input
-        $('#chat-input').val(message);
-        
         // Hide the context menu
         contextMenu.hide();
+    });
+
+    // Handle context modal close
+    $('#contextModal').on('hidden.bs.modal', function () {
+        const context = $('#contextText').val();
+        if (context) {
+            showLoader();
+            $.ajax({
+                url: '/api/update_context',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ context: context }),
+                success: function(response) {
+                    appendMessage('ai', 'Context has been updated successfully.');
+                },
+                error: function(response) {
+                    appendMessage('error', 'Error saving context: ' + response.responseText);
+                },
+                complete: function() {
+                    clearLoader();
+                }
+            });
+        }
     });
 
     // Hide context menu when clicking outside
@@ -268,7 +323,8 @@ $(document).ready(function() {
             css: {
                 padding: '10px',
                 borderRadius: '8px',
-                maxWidth: '80%'
+                maxWidth: '80%',
+                whiteSpace: 'pre-wrap'
             }
         });
 
@@ -292,7 +348,8 @@ $(document).ready(function() {
             });
         }
 
-        messageDiv.text(message);
+        // Replace newlines with <br> tags and set as HTML
+        messageDiv.html(message.replace(/\n/g, '<br>'));
         chatMessages.append(messageDiv);
         chatMessages.scrollTop(chatMessages[0].scrollHeight);
     }
