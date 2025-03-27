@@ -294,16 +294,16 @@ Notebook content:
     except Exception as e:
         return flask.jsonify({"error": str(e)}), 500
     
-@api_bp.route('/question_creator_context', methods=['GET'])
+@api_bp.route('/question_creator_context', methods=['POST'])
 def question_creator_context():
     print("Question with context")
     
     # Get question from request
     data = flask.request.get_json()
-    if not data or 'question' not in data:
+    if not data or 'message' not in data:
         return flask.jsonify({"error": "Question is required"}), 400
     
-    question = data['question']
+    question = data['message']
     
     # Load the notebook
     with open('notebooks/Sales Demand Forecast.ipynb', 'r') as f:

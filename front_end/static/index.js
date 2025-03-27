@@ -229,7 +229,7 @@ $(document).ready(function() {
 
         // Send message to backend with chat history
         $.ajax({
-            url: '/api/chat',
+            url: '/api/question_creator_context',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({ 
@@ -238,10 +238,10 @@ $(document).ready(function() {
             }),
             success: function(response) {
                 // Show AI response in chat
-                appendMessage('ai', response.message);
+                appendMessage('ai', response);
                 
                 // Add AI response to history
-                chatHistory.push({ role: 'assistant', content: response.message });
+                chatHistory.push({ role: 'assistant', content: response });
             },
             error: function(response) {
                 appendMessage('error', 'Sorry, there was an error processing your message.');
