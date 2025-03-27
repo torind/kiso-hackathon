@@ -1,0 +1,2 @@
+Hyperparameters: 
+Hyperparameters are chosen based on what Cursor thought was best. 
