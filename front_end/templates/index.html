@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block nav %}
+<div class="form ms-2">
+    <div class="d-flex align-items-center">
+      <div class="me-2 text-light" style="width: 100%;">Select Notebook:</div>
+      <select id="dataset-selector" class="form-select me-2" style="min-width: 300px;">
+        <!-- Options will be populated dynamically -->
+      </select>
+      <!-- Plus icon to add new dataset -->
+      <button id="upload-dataset-btn" class="btn btn-secondary me-2">
+        <i class="fas fa-upload"></i>
+      </button>
+      <button id="view-dataset-btn" class="btn btn-secondary me-2">
+        <i class="fas fa-expand"></i>
+      </button>
+      <button id="delete-dataset-btn" class="btn btn-secondary me-2">
+        <i class="fas fa-trash"></i>
+      </button>
+      <button id="add-dataset-btn" class="btn btn-secondary me-2">
+        <i class="fas fa-plus"></i>
+      </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+
+
+<div class="d-flex flex-column justify-content-center align-items-center px-4">
+
+    <!-- Code Intro Panel  -->
+    <div class="card w-100 my-3">
+        
+        <div id='data-preview-panel-heading' class="card-header d-flex justify-content-between bg-dark text-light">
+            Code Intro
+            <i class="fas fa-chevron-down me-2"></i>
+        </div>  
+        <div id='data-preview-panel-body' class="card-body p-3 collapse show">
+            E-Learning Stuff
+        </div>
+    </div>
+
+
+    <!-- Code Learning Panel  -->
+    <div class="card w-100 my-3">
+        
+        <div id='data-preview-panel-heading' class="card-header d-flex justify-content-between bg-dark text-light">
+            Code Interaction
+            <i class="fas fa-chevron-down me-2"></i>
+        </div>  
+        <div id='data-preview-panel-body' class="card-body p-3 collapse show">
+            Double panel
+        </div>
+    </div>
+
+    
+
+</div>
+
+
+{% endblock %}

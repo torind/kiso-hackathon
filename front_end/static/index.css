@@ -1,0 +1,18 @@
+.card-header {
+    cursor: pointer;
+    font-size: 14pt;
+}
+
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.22);
+    border-color: var(--bs-dark);
+}
+
+.card-body {
+    background-color: #ffffff;
+}
+
+/* #data-preview-panel-body {
+    max-height: 33vh;
+    overflow-y: auto;
+} */

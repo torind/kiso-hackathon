@@ -4,27 +4,12 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import json
 
-
-# Load environment variables
-
-app = flask.Flask(__name__)
-
-# Initialize OpenAI client
+load_dotenv()
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
-# # Test the OpenAI client with a simple API call
-# try:
-#     test_response = client.chat.completions.create(
-#         model="gpt-3.5-turbo",
-#         messages=[{"role": "user", "content": "Hello"}],
-#         max_tokens=10
-#     )
-#     print("Test response:", test_response.choices[0].message.content)
-# except Exception as e:
-#     print(f"Error initializing OpenAI client: {str(e)}")
-#     raise e
+api_bp = flask.Blueprint('llm_endpoints', __name__)
 
-@app.route('/api/summary', methods=['POST'])
+@api_bp.route('/summary', methods=['GET'])
 def summary():
     print("Summary function called")
     # Load the Sales Demand Forecast notebook directly
@@ -64,10 +49,6 @@ Notebook content:
         )
         
         summary = response.choices[0].message.content
-        print(summary)
-        return #flask.jsonify({"summary": summary}), 200
+        return flask.jsonify(summary), 200
     except Exception as e:
-        return #flask.jsonify({"error": str(e)}), 500
-
-if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+        return flask.jsonify({"error": str(e)}), 500
