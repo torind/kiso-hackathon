@@ -356,3 +356,34 @@ only use 2 sentences for the answer"""
         return flask.jsonify(answer), 200
     except Exception as e:
         return flask.jsonify({"error": str(e)}), 500
+
+
+@api_bp.route('/get_context', methods=['GET'])
+def get_context():
+    try:
+        with open('notebooks/context.txt', 'r') as f:
+            context = f.read()
+        return flask.jsonify(context), 200
+    except FileNotFoundError:
+        return flask.jsonify("No additional context available."), 404
+    except Exception as e:
+        return flask.jsonify({"error": str(e)}), 500
+    
+@api_bp.route('/update_context', methods=['POST'])
+def update_context():
+    try:
+        # Get the new context from the request body
+        new_context = flask.request.get_json().get('context')
+        
+        if not new_context:
+            return flask.jsonify({"error": "No context provided in request"}), 400
+            
+        # Write the new context to the file
+        with open('notebooks/context.txt', 'w') as f:
+            f.write(new_context)
+            
+        return flask.jsonify({"message": "Context updated successfully"}), 200
+    except Exception as e:
+        return flask.jsonify({"error": str(e)}), 500
+
+
